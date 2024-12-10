@@ -77,10 +77,6 @@ k = leftjoin(most_trains, stations, on=:station_code=>:uic,  matchmissing=:noteq
 sort!(combine(groupby(k, :country), :nrow => sum => :nrow), :nrow, rev=true) # weird sample, lots of italian / finnish trains, few french etc
 
 # one_station = df[df.station_code .== 8061676, :]
-leftjoin!(toy, stations, on=:station_code=>:uic,  matchmissing=:notequal)
-map(timetrains -> (time=timetrains.time, trains=size(timetrains.df,1)), window(toy, Hour(1), Time(0):Minute(30):Time(23,59), key=:arrival24)) |> DataFrame
-plot(bethune_per_hour.time, bethune_per_hour.trains, label="Bethune, France", xticks=Time(0):Hour(2):Time(23,59), xrotation=45, margin=5*Plots.Measures.mm, legend=:bottomright, ylabel="Trains per hour")
-
 
 
 top_countries = combine(groupby(toy, :country), nrow)
