@@ -21,15 +21,24 @@ else
     Time(0) + (t > Day(1) ? t - Day(1) : t)
 end
 
-# todo: window should wrap around midnight
+# wrap around midnight
+function inbounds(t, range)
+    ismissing(t) && return false
+    return if range[end] > range[1]
+        range[1] <= t < range[end]
+    else
+        (range[1] <= t <= Time(23,59,59,999)) || (Time(0) <= t < range[end])
+    end
+end
+
 function window(df, window_size, probes; key=:time)
     map(time -> begin
-            (time=time, df=withinrange(df, (time-window_size):Second(1):(time+window_size-Second(1)), key=key))
+            (time=time, df=withinrange(df, [time-window_size, time+window_size-Second(1)], key=key))
     end, probes)
 end
 
 function withinrange(df, range; key=:time)
-    @view df[in.(df[!, key],Ref(range)), :]
+    @view df[inbounds.(df[!, key],Ref(range)), :]
 end
 
 # lib funcs end
