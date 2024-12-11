@@ -82,12 +82,13 @@ most_trains = sort!(combine(groupby(toy, :station_code), nrow), :nrow, rev=true)
 # ideally would use merits data here
 stations = CSV.read("data/trainline/stations.csv", DataFrame) # misses a fair few stations
 
-k = leftjoin(most_trains, stations, on=:station_code=>:uic,  matchmissing=:notequal)
-sort!(combine(groupby(k, :country), :nrow => sum => :nrow), :nrow, rev=true) # weird sample, lots of italian / finnish trains, few french etc
+# k = leftjoin(most_trains, stations, on=:station_code=>:uic,  matchmissing=:notequal)
+# sort!(combine(groupby(k, :country), :nrow => sum => :nrow), :nrow, rev=true) # weird sample, lots of italian / finnish trains, few french etc
 
 # one_station = df[df.station_code .== 8061676, :]
 
 
+leftjoin!(toy, stations, on=:station_code=>:uic,  matchmissing=:notequal)
 top_countries = combine(groupby(toy, :country), nrow)
 top_countries = top_countries[top_countries.nrow .> 1000, :]
 dropmissing!(top_countries)
